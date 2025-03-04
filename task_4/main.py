@@ -29,7 +29,7 @@ def write_to_db(csv_data: list[list[str]]) -> None:
                     (name, position, salary),
                 )
                 print(f"Добавлена запись: {name}, {position}, {salary}")
-            except print as e:
+            except Exception as e:
                 print(f"Ошибка при добавлении записи {row}: {e}")
 
 

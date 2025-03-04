@@ -4,7 +4,6 @@ from constants import get_cursor
 
 
 def add_data_to_db(data: list[str]) -> None:
-    data = ""
     try:
         with get_cursor() as cur:
             for row in range(5):
