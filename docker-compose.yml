@@ -1,0 +1,66 @@
+services:
+  base:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: backend:base-latest
+
+  db:
+    image: postgres:14
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+      - ./init-scripts:/docker-entrypoint-initdb.d
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=tasks_db
+      - POSTGRES_HOST=db
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    ports:
+      - "5432:5432"
+
+  backend_task_1:
+    build:
+      context: ./task_1
+      dockerfile: Dockerfile
+    depends_on:
+      base:
+        condition: service_started
+      db:
+        condition: service_healthy
+    volumes:
+      - ./task_1:/app
+
+  backend_task_4:
+    build:
+      context: ./task_4
+      dockerfile: Dockerfile
+    depends_on:
+      base:
+        condition: service_started
+      db:
+        condition: service_healthy
+
+    volumes:
+      - ./task_4:/app
+    environment:
+      - CSV_PATH=/app/employees.csv
+
+  backend_task_7:
+    build:
+      context: ./task_7
+      dockerfile: Dockerfile
+    depends_on:
+      base:
+        condition: service_started
+      db:
+        condition: service_healthy
+    volumes:
+      - ./task_7:/app
+
+volumes:
+  postgres_data:
