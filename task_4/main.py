@@ -1,23 +1,47 @@
+import csv
 import os
 from pathlib import Path
-import csv
 
-from constants import get_cursor
+from core import get_cursor, base_logger
 
 
 def read_csv(path: Path) -> list[list[str]]:
-    with open(path) as file:
-        csv_reader = csv.reader(file)
-        csv_data = []
-        for row in csv_reader:
-            # Удаляем лишние пробелы.
-            clean_row = [item.strip() for item in row]
-            csv_data.append(clean_row)
-    print(f"Прочитанные данные: {csv_data}")
-    return csv_data
+    """
+    Читает данные из CSV файл построчно.
+
+    Args:
+        path: Путь к файлу.
+
+    Returns:
+        Список списков со строками.
+    """
+    try:
+        with open(path) as file:
+            csv_reader = csv.reader(file)
+            csv_data = []
+            for row in csv_reader:
+                # Удаляем лишние пробелы.
+                clean_row = [item.strip() for item in row]
+                csv_data.append(clean_row)
+        base_logger.log(f"Прочитанные данные: {csv_data}", level="success")
+        return csv_data
+
+    except Exception as error:
+        base_logger.log(f"Ошибка с чтением файла: {error}", level="error")
+
+    return None
 
 
 def write_to_db(csv_data: list[list[str]]) -> None:
+    """
+    Принимает данные из CSV и записывает их в БД.
+
+    Args:
+        csv_data: Данные из CSV файла.
+    """
+    if csv_data is None:
+        base_logger.log(f"Данные пусты", level="error")
+        return
     with get_cursor() as cur:
         cur.execute("TRUNCATE TABLE employees;")
         data = csv_data[1:]  # Пропускаем заголовки.
@@ -28,12 +52,25 @@ def write_to_db(csv_data: list[list[str]]) -> None:
                     "INSERT INTO employees (name, position, salary) VALUES (%s, %s, %s)",
                     (name, position, salary),
                 )
-                print(f"Добавлена запись: {name}, {position}, {salary}")
+                base_logger.log(
+                    f"Добавлена запись: {name}, {position}, {salary}", level="success"
+                )
             except Exception as e:
-                print(f"Ошибка при добавлении записи {row}: {e}")
+                base_logger.log(
+                    f"Ошибка при добавлении записи {row}: {e}", level="error"
+                )
 
 
-def find_employees_by_position(position: str) -> tuple[str]:
+def find_employees_by_position(position: str) -> list[tuple[str]]:
+    """
+    Находит сотрудника по его должности.
+
+    Args:
+        position: Позиция должности.
+
+    Returns:
+        Список кортежей строк.
+    """
     with get_cursor() as cur:
         cur.execute("SELECT name FROM employees WHERE position = %s", (position,))
         data = cur.fetchall()
@@ -41,6 +78,13 @@ def find_employees_by_position(position: str) -> tuple[str]:
 
 
 def update_salary_by_name(name: str, new_salary: int) -> None:
+    """
+    Обновляет зарплату сотрудника по имени.
+
+    Args:
+        name: Имя сотрудника.
+        new_salary: Новая зарплата.
+    """
     with get_cursor() as cur:
         cur.execute(
             "UPDATE employees SET salary = %s WHERE name = %s", (new_salary, name)
@@ -48,6 +92,13 @@ def update_salary_by_name(name: str, new_salary: int) -> None:
 
 
 def main() -> None:
+    """
+    Основная логика программы.
+
+    Вызывает функцию read_csv с путем к файлу и выводит данные.
+    Вызывает функцию write_to_db с данными из CSV
+    и записывает их в базу данных.
+    """
     env_path = os.environ.get("CSV_PATH", "employees.csv")
     path = Path(env_path)
     data = read_csv(path)

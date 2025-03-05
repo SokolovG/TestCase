@@ -7,7 +7,7 @@ def add_data_to_db(data: list[str]) -> None:
     try:
         with get_cursor() as cur:
             for row in range(5):
-                name, position, salary = data
+                name, position, salary = row
                 cur.execute(
                     "INSERT INTO employees (name, position, salary) VALUES (%s, %s, %s)",
                     (name, position, salary),
