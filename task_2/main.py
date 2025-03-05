@@ -1,6 +1,7 @@
 from typing import Any
 
-from .constants import EMPLOYEES, HIGH_SALARY_EMPLOYEES, Employee
+from .constants import HIGH_SALARY_EMPLOYEES
+from ..constants import EMPLOYEES_TASK_2, Employee
 from core import Logger
 
 
@@ -53,7 +54,7 @@ def main() -> None:
     Вызывает функцию filter_employees_and_return с константой EMPLOYEES
     и логирует результат на экран.
     """
-    logger.info(filter_employees_and_return(EMPLOYEES))
+    logger.info(filter_employees_and_return(EMPLOYEES_TASK_2))
 
 
 if __name__ == "__main__":
