@@ -1,7 +1,7 @@
 from typing import Optional
 
 from core import get_cursor, Logger
-from ..constants import EMPLOYEES_TASK_1, Employee
+from constants import EMPLOYEES_TASK_1, Employee
 
 
 logger = Logger("Task_1")

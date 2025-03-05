@@ -1,9 +1,10 @@
 from typing import Any
 
-from .constants import HIGH_SALARY_EMPLOYEES
-from ..constants import EMPLOYEES_TASK_2, Employee
-from core import Logger
+from constants import EMPLOYEES_TASK_2, Employee
+from task_2.constants import HIGH_SALARY_EMPLOYEES
 
+
+from core import Logger
 
 logger = Logger("Task_2")
 
