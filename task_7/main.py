@@ -1,5 +1,3 @@
-from typing import Optional
-
 from core import get_cursor, Logger
 
 
