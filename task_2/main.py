@@ -1,6 +1,7 @@
 from typing import Any
 
 from .constants import EMPLOYEES, HIGH_SALARY_EMPLOYEES, Employee
+from core import base_logger
 
 
 def filter_employees_and_return(employees_list: list[Employee]) -> dict[str, Any]:
@@ -47,9 +48,9 @@ def main() -> None:
     Основная логика программы.
 
     Вызывает функцию filter_employees_and_return с константой EMPLOYEES
-    и выводит результат на экран.
+    и логирует результат на экран.
     """
-    print(filter_employees_and_return(EMPLOYEES))
+    base_logger.log(filter_employees_and_return(EMPLOYEES), level="info")
 
 
 if __name__ == "__main__":

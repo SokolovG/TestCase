@@ -1,6 +1,6 @@
 from typing import Optional
 
-from constants import get_cursor
+from core import get_cursor, base_logger
 
 
 def list_products_less_10() -> Optional[list[tuple[str]]]:
@@ -11,13 +11,13 @@ def list_products_less_10() -> Optional[list[tuple[str]]]:
             return data
 
     except Exception as e:
-        print(f"Ошибка при получении продуктов: {e}")
+        base_logger.log(f"Ошибка при получении продуктов: {e}", level="error")
         return []
 
 
 def update_price_by_name(new_price: int, name: str) -> None:
     if new_price < 0:
-        print("Цена не может быть отрицательной")
+        base_logger.log("Цена не может быть отрицательной", level="error")
         return
 
     try:
@@ -27,13 +27,13 @@ def update_price_by_name(new_price: int, name: str) -> None:
             )
 
     except Exception as e:
-        print(f"Ошибка при обновлении цены: {e}")
+        base_logger.log(f"Ошибка при обновлении цены: {e}", level="error")
         return
 
 
 def main() -> None:
     data = list_products_less_10()
-    print(data)
+    base_logger.log(data, level="info")
 
 
 if __name__ == "__main__":

@@ -54,7 +54,15 @@ class BaseLogger:
         return logger
 
     def log(self, message: str, level: Optional[str] = "info") -> None:
-        """Log messages with specified level and colors."""
+        """
+
+        Args:
+            message:
+            level:
+
+        Returns:
+
+        """
         if level == "info":
             message = f"{Fore.WHITE}{message}{Style.RESET_ALL}"
             self.logger.info(message)

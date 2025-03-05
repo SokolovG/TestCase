@@ -1,6 +1,6 @@
 from typing import Optional
 
-from constants import get_cursor
+from core import get_cursor, base_logger
 
 
 def add_data_to_db(data: list[str]) -> None:
@@ -14,7 +14,7 @@ def add_data_to_db(data: list[str]) -> None:
                 )
 
     except Exception as e:
-        print(f"Ошибка при добавлении сотрудников: {e}")
+        base_logger.log(f"Ошибка при добавлении сотрудников: {e}", level="error")
         return
 
 
