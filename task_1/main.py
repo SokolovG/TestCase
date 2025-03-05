@@ -20,7 +20,7 @@ def add_data_to_db(data: list[Employee]) -> bool:
     try:
         with get_cursor() as cur:
             for row in data:
-                name, position, salary = row
+                name, position, salary = row["name"], row["position"], row["salary"]
                 cur.execute(
                     "INSERT INTO employees (name, position, salary) VALUES (%s, %s, %s)",
                     (name, position, salary),

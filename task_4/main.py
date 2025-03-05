@@ -1,3 +1,4 @@
+from typing import Optional
 import csv
 import os
 from pathlib import Path
@@ -8,7 +9,7 @@ from core import get_cursor, Logger
 logger = Logger("Task_4")
 
 
-def read_csv(path: Path) -> list[list[str]]:
+def read_csv(path: Path) -> Optional[list[list[str]]]:
     """
     Читает данные из CSV файл построчно.
 
@@ -16,7 +17,7 @@ def read_csv(path: Path) -> list[list[str]]:
         path: Путь к файлу.
 
     Returns:
-        Список списков со строками.
+        Список списков со строками или None.
     """
     try:
         with open(path) as file:
@@ -31,8 +32,7 @@ def read_csv(path: Path) -> list[list[str]]:
 
     except Exception as error:
         logger.error(f"Ошибка с чтением файла: {error}")
-
-    return None
+        return None
 
 
 def write_to_db(csv_data: list[list[str]]) -> None:
@@ -76,7 +76,7 @@ def find_employees_by_position(position: str) -> list[tuple[str]]:
         return data
 
 
-def update_salary_by_name(name: str, new_salary: int) -> None:
+def update_salary_by_name(name: str, new_salary: int) -> bool:
     """
     Обновляет зарплату сотрудника по имени.
 
@@ -84,11 +84,25 @@ def update_salary_by_name(name: str, new_salary: int) -> None:
         name: Имя сотрудника.
         new_salary: Новая зарплата.
     """
-    with get_cursor() as cur:
-        cur.execute(
-            "UPDATE employees SET salary = %s WHERE name = %s", (new_salary, name)
-        )
+    if new_salary <= 0:
+        logger.error("Зарплата должна быть положительным числом")
+        return False
+    if not name:
+        logger.error("Имя сотрудника не может быть пустым")
+        return False
 
+    try:
+        with get_cursor() as cur:
+            cur.execute(
+                "UPDATE employees SET salary = %s WHERE name = %s",
+                (new_salary, name)
+            )
+            logger.success(f"Обновлена зарплата {name} на {new_salary}")
+            return True
+
+    except Exception as e:
+        logger.error(f"Ошибка при обновлении зарплаты сотрудника {name} c новой зарплатой {new_salary}: {e}")
+        return False
 
 def main() -> None:
     """
