@@ -2,7 +2,10 @@ import csv
 import os
 from pathlib import Path
 
-from core import get_cursor, base_logger
+from core import get_cursor, Logger
+
+
+logger = Logger("Task_4")
 
 
 def read_csv(path: Path) -> list[list[str]]:
@@ -23,11 +26,11 @@ def read_csv(path: Path) -> list[list[str]]:
                 # Удаляем лишние пробелы.
                 clean_row = [item.strip() for item in row]
                 csv_data.append(clean_row)
-        base_logger.log(f"Прочитанные данные: {csv_data}", level="success")
+        logger.success(f"Прочитанные данные: {csv_data}")
         return csv_data
 
     except Exception as error:
-        base_logger.log(f"Ошибка с чтением файла: {error}", level="error")
+        logger.error(f"Ошибка с чтением файла: {error}")
 
     return None
 
@@ -40,7 +43,7 @@ def write_to_db(csv_data: list[list[str]]) -> None:
         csv_data: Данные из CSV файла.
     """
     if csv_data is None:
-        base_logger.log(f"Данные пусты", level="error")
+        logger.error(f"Данные пусты")
         return
     with get_cursor() as cur:
         cur.execute("TRUNCATE TABLE employees;")
@@ -52,13 +55,9 @@ def write_to_db(csv_data: list[list[str]]) -> None:
                     "INSERT INTO employees (name, position, salary) VALUES (%s, %s, %s)",
                     (name, position, salary),
                 )
-                base_logger.log(
-                    f"Добавлена запись: {name}, {position}, {salary}", level="success"
-                )
+                logger.success(f"Добавлена запись: {name}, {position}, {salary}")
             except Exception as e:
-                base_logger.log(
-                    f"Ошибка при добавлении записи {row}: {e}", level="error"
-                )
+                logger.error(f"Ошибка при добавлении записи {row}: {e}")
 
 
 def find_employees_by_position(position: str) -> list[tuple[str]]:

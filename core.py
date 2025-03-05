@@ -1,12 +1,14 @@
 from contextlib import contextmanager
 import logging
 import sys
-from typing import Optional
 
 from colorama import init, Fore, Style
 import psycopg2
 
 from constants import HOST, PORT, DATABASE, USER, PASSWORD
+
+
+init()
 
 
 @contextmanager
@@ -26,55 +28,42 @@ def get_cursor():
         conn.close()
 
 
-init()
+class Logger:
+    def __init__(self, name: str = None):
+        logger_name = name or "Logger"
+        self.logger = logging.getLogger(logger_name)
+        self.logger.setLevel(logging.INFO)
 
+        # Очищаем существующие обработчики.
+        if self.logger.handlers:
+            self.logger.handlers.clear()
 
-class BaseLogger:
-    def __init__(self):
-        self.logger = self._setup_logger()
+        # Создаем консольный вывод.
+        console = logging.StreamHandler(sys.stdout)
 
-    def _setup_logger(self) -> logging.Logger:
-        logger = logging.getLogger(self.__class__.__name__)
-        logger.setLevel(logging.INFO)
-
-        if logger.handlers:
-            logger.handlers.clear()
-
-        console_handler = logging.StreamHandler(sys.stdout)
-        console_handler.setLevel(logging.INFO)
-
+        # Настраиваем формат с цветным именем логгера.
         formatter = logging.Formatter(
-            f"{Fore.GREEN}%(name)s{Style.RESET_ALL} - " f"%(message)s",
+            f"{Fore.GREEN}%(name)s{Style.RESET_ALL} - %(message)s"
         )
+        console.setFormatter(formatter)
+        self.logger.addHandler(console)
 
-        console_handler.setFormatter(formatter)
+    def info(self, message):
+        # Обычные информационные сообщения - белым цветом.
+        colored_message = f"{Fore.WHITE}{message}{Style.RESET_ALL}"
+        self.logger.info(colored_message)
 
-        logger.addHandler(console_handler)
+    def error(self, message):
+        # Сообщения об ошибках - красным цветом.
+        colored_message = f"{Fore.RED}{message}{Style.RESET_ALL}"
+        self.logger.error(colored_message)
 
-        return logger
+    def warning(self, message):
+        # Предупреждения - желтым цветом.
+        colored_message = f"{Fore.YELLOW}{message}{Style.RESET_ALL}"
+        self.logger.warning(colored_message)
 
-    def log(self, message: str, level: Optional[str] = "info") -> None:
-        """
-
-        Args:
-            message:
-            level:
-
-        Returns:
-
-        """
-        if level == "info":
-            message = f"{Fore.WHITE}{message}{Style.RESET_ALL}"
-            self.logger.info(message)
-        elif level == "error":
-            message = f"{Fore.RED}{message}{Style.RESET_ALL}"
-            self.logger.error(message)
-        elif level == "warning":
-            message = f"{Fore.YELLOW}{message}{Style.RESET_ALL}"
-            self.logger.warning(message)
-        elif level == "success":
-            message = f"{Fore.GREEN}{message}{Style.RESET_ALL}"
-            self.logger.info(message)
-
-
-base_logger = BaseLogger()
+    def success(self, message):
+        # Сообщения об успехе - зеленым цветом.
+        colored_message = f"{Fore.GREEN}{message}{Style.RESET_ALL}"
+        self.logger.info(colored_message)

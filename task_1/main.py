@@ -1,6 +1,7 @@
-from typing import Optional
+from core import get_cursor, Logger
 
-from core import get_cursor, base_logger
+
+logger = Logger("Task_1")
 
 
 def add_data_to_db(data: list[str]) -> None:
@@ -14,11 +15,11 @@ def add_data_to_db(data: list[str]) -> None:
                 )
 
     except Exception as e:
-        base_logger.log(f"Ошибка при добавлении сотрудников: {e}", level="error")
+        logger.error(f"Ошибка при добавлении сотрудников: {e}")
         return
 
 
-def get_employee_with_salary() -> Optional[list[tuple[str]]]:
+def get_employee_with_salary() -> list[tuple[str]]:
     pass
 
 

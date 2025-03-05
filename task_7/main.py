@@ -1,9 +1,18 @@
 from typing import Optional
 
-from core import get_cursor, base_logger
+from core import get_cursor, Logger
 
 
-def list_products_less_10() -> Optional[list[tuple[str]]]:
+logger = Logger("Task_7")
+
+
+def list_products_less_10() -> list[tuple[str]]:
+    """Возвращает список продуктов с количеством меньше 10.
+
+    Returns:
+        Список кортежей, содержащих информацию о продуктах.
+        В случае ошибки возвращает пустой список.
+    """
     try:
         with get_cursor() as cur:
             cur.execute("SELECT * FROM products WHERE quantity < 10;")
@@ -11,13 +20,19 @@ def list_products_less_10() -> Optional[list[tuple[str]]]:
             return data
 
     except Exception as e:
-        base_logger.log(f"Ошибка при получении продуктов: {e}", level="error")
+        logger.error(f"Ошибка при получении продуктов: {e}")
         return []
 
 
 def update_price_by_name(new_price: int, name: str) -> None:
+    """Обновляет цену продукта по его названию.
+
+    Args:
+       new_price: Новая цена продукта. Должна быть неотрицательной.
+       name: Название продукта, цену которого нужно обновить.
+    """
     if new_price < 0:
-        base_logger.log("Цена не может быть отрицательной", level="error")
+        logger.error("Цена не может быть отрицательной")
         return
 
     try:
@@ -27,13 +42,17 @@ def update_price_by_name(new_price: int, name: str) -> None:
             )
 
     except Exception as e:
-        base_logger.log(f"Ошибка при обновлении цены: {e}", level="error")
+        logger.error(f"Ошибка при обновлении цены: {e}")
         return
 
 
 def main() -> None:
+    """Основная функция программы.
+
+    Получает список продуктов с количеством меньше 10 и выводит информацию в лог.
+    """
     data = list_products_less_10()
-    base_logger.log(data, level="info")
+    logger.info(data)
 
 
 if __name__ == "__main__":

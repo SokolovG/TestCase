@@ -1,8 +1,9 @@
 from typing import Final
 
-from core import base_logger
+from core import Logger
 
 
+logger = Logger("Task_5")
 input_list: Final[list[int]] = [10, 20, 30, 40, 50, 30, 20]
 
 
@@ -36,7 +37,7 @@ def main() -> None:
 
     Вызывает функцию analyze_numbers со списком чисел и логирует результат.
     """
-    base_logger.log(analyze_numbers(input_list), level="info")
+    logger.info(analyze_numbers(input_list))
 
 
 if __name__ == "__main__":
